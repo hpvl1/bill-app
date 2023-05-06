@@ -21,7 +21,7 @@ function checkScreenSize() {
 <template>
   <div v-if="!mobile" class="app flex flex-column">
     <Navigation />
-    <div class="app-contend flex flex-column">
+    <div class="app-content flex flex-column">
       <router-view />
     </div>
   </div>
