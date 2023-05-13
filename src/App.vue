@@ -1,8 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, provide } from 'vue';
+
 import Navigation from './components/Navigation.vue';
+import BillModal from './components/BillModal.vue';
+
 
 let mobile = ref(null);
+const billModal = ref(false);
 
 checkScreenSize();
 window.addEventListener('resize', checkScreenSize);
@@ -16,12 +20,24 @@ function checkScreenSize() {
   }
   mobile.value = false;
 }
+
+function toggleModel() {
+  billModal.value = !billModal.value;
+}
+
+provide('billModal', {
+  billModal,
+  toggleModel,
+});
 </script>
 
 <template>
   <div v-if="!mobile" class="app flex flex-column">
     <Navigation />
     <div class="app-content flex flex-column">
+      <Transition name="billModal">
+        <BillModal @close-bill="toggleModel" v-if="billModal" />
+      </Transition>
       <router-view />
     </div>
   </div>
@@ -65,6 +81,18 @@ function checkScreenSize() {
   p {
     margin-top: 16px;
   }
+}
+
+// anim Bill Modal
+.billModal-enter-active,
+.billModal-leave-active {
+  transition: 0.8s ease all;
+}
+
+.billModal-enter-from,
+.billModal-leave-to
+{
+  transform: translateX(-700px);
 }
 
 button,
