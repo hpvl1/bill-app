@@ -1,8 +1,10 @@
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, ref } from 'vue';
 import { uid } from 'uid';
 import db from '../firebase/index.js';
 import { addDoc, collection } from 'firebase/firestore';
+
+import Loading from './Loading.vue';
 
 const emit = defineEmits(['closeBill']);
 
@@ -33,6 +35,8 @@ const form = reactive({
     day: 'numeric',
   },
 });
+
+let loading = ref(null);
 
 form.billDateUnix = Date.now();
 form.billDate = new Date(form.billDateUnix).toLocaleDateString('en-GB', form.dateOptions);
@@ -76,6 +80,8 @@ async function uploadBill() {
     return;
   }
 
+  loading.value = true;
+
   calcBillTotal();
 
   await addDoc(collection(db, 'bills'), {
@@ -101,6 +107,8 @@ async function uploadBill() {
     billItemList: form.billItemList,
   });
 
+  loading.value = false;
+
   closeBillModal();
 }
 
@@ -121,26 +129,27 @@ watch(
 <template>
   <div @click="checkClick" ref="billWrap" class="bill-wrap flex flex-column">
     <form @submit.prevent="submitForm" class="bill-content">
+      <Loading v-show="loading" />
       <h1>New Bill</h1>
       <!-- Bill From -->
       <div class="bill-from flex flex-column">
         <h4>Bill From</h4>
         <div class="input flex flex-column">
           <label for="billerAddress">Street Address</label>
-          <input v-model="form.billerAddress.trim" type="text" id="billerAddress" required />
+          <input v-model.trim="form.billerAddress" type="text" id="billerAddress" required />
         </div>
         <div class="location-details flex">
           <div class="input flex flex-column">
             <label for="billerCity">City</label>
-            <input v-model="form.billerCity.trim" type="text" id="billerCity" required />
+            <input v-model.trim="form.billerCity" type="text" id="billerCity" required />
           </div>
           <div class="input flex flex-column">
             <label for="billerZipCode">Zip Code</label>
-            <input v-model="form.billerZipCode.trim" type="text" id="billerZipCode" required />
+            <input v-model.trim="form.billerZipCode" type="text" id="billerZipCode" required />
           </div>
           <div class="input flex flex-column">
             <label for="billerCountry">Country</label>
-            <input v-model="form.billerCountry.trim" type="text" id="billerCountry" required />
+            <input v-model.trim="form.billerCountry" type="text" id="billerCountry" required />
           </div>
         </div>
       </div>
@@ -149,29 +158,29 @@ watch(
         <h4>Bill To</h4>
         <div class="input flex flex-column">
           <label for="clientName">Client's Name</label>
-          <input v-model="form.clientName.trim" type="text" id="clientName" required />
+          <input v-model.trim="form.clientName" type="text" id="clientName" required />
         </div>
         <div class="input flex flex-column">
           <label for="clientEmail">Client's Email</label>
-          <input v-model="form.clientEmail.trim" type="text" id="clientEmail" required />
+          <input v-model.trim="form.clientEmail" type="text" id="clientEmail" required />
         </div>
         <div class="input flex flex-column">
           <label for="clientAddress">Street Address</label>
-          <input v-model="form.clientAddress.trim" type="text" id="clientAddress" required />
+          <input v-model.trim="form.clientAddress" type="text" id="clientAddress" required />
         </div>
 
         <div class="location-details flex">
           <div class="input flex flex-column">
             <label for="clientCity">City</label>
-            <input v-model="form.clientCity.trim" type="text" id="clientCity" required />
+            <input v-model.trim="form.clientCity" type="text" id="clientCity" required />
           </div>
           <div class="input flex flex-column">
             <label for="clientZipCode">Zip Code</label>
-            <input v-model="form.clientZipCode.trim" type="text" id="clientZipCode" required />
+            <input v-model.trim="form.clientZipCode" type="text" id="clientZipCode" required />
           </div>
           <div class="input flex flex-column">
             <label for="clientCountry">Country</label>
-            <input v-model="form.clientCountry.trim" type="text" id="clientCountry" required />
+            <input v-model.trim="form.clientCountry" type="text" id="clientCountry" required />
           </div>
         </div>
       </div>
@@ -196,7 +205,7 @@ watch(
         </div>
         <div class="input flex flex-column">
           <label for="productDescription">Product Description</label>
-          <input v-model="form.productDescription.trim" type="text" id="productDescription" required />
+          <input v-model.trim="form.productDescription" type="text" id="productDescription" required />
         </div>
         <div class="work-items">
           <h3>Item List</h3>
@@ -208,9 +217,9 @@ watch(
               <th class="total">Total</th>
             </tr>
             <tr class="table-items flex" v-for="item in form.billItemList" :key="item.id">
-              <td class="item-name"><input type="text" v-model="item.itemName.trim" /></td>
-              <td class="quantity"><input type="text" v-model="item.quantity.trim" /></td>
-              <td class="price"><input type="text" v-model="item.price.trim" /></td>
+              <td class="item-name"><input type="text" v-model.trim="item.itemName" /></td>
+              <td class="quantity"><input type="text" v-model.trim="item.quantity" /></td>
+              <td class="price"><input type="text" v-model.trim="item.price" /></td>
               <td class="total flex">${{ (item.total = item.quantity * item.price) }}</td>
               <img @click="onDeleteBillItem(item.id)" src="../assets//img/icon-delete.svg" alt="" />
             </tr>
