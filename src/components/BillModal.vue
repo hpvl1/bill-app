@@ -1,8 +1,10 @@
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, ref } from 'vue';
 import { uid } from 'uid';
 import db from '../firebase/index.js';
 import { addDoc, collection } from 'firebase/firestore';
+
+import Loading from './Loading.vue';
 
 const emit = defineEmits(['closeBill']);
 
@@ -33,6 +35,8 @@ const form = reactive({
     day: 'numeric',
   },
 });
+
+let loading = ref(null);
 
 form.billDateUnix = Date.now();
 form.billDate = new Date(form.billDateUnix).toLocaleDateString('en-GB', form.dateOptions);
@@ -76,6 +80,8 @@ async function uploadBill() {
     return;
   }
 
+  loading.value = true;
+
   calcBillTotal();
 
   await addDoc(collection(db, 'bills'), {
@@ -101,6 +107,8 @@ async function uploadBill() {
     billItemList: form.billItemList,
   });
 
+  loading.value = false;
+
   closeBillModal();
 }
 
@@ -121,6 +129,7 @@ watch(
 <template>
   <div @click="checkClick" ref="billWrap" class="bill-wrap flex flex-column">
     <form @submit.prevent="submitForm" class="bill-content">
+      <Loading v-show="loading" />
       <h1>New Bill</h1>
       <!-- Bill From -->
       <div class="bill-from flex flex-column">
