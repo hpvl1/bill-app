@@ -3,10 +3,13 @@ import { ref, provide } from 'vue';
 
 import Navigation from './components/Navigation.vue';
 import BillModal from './components/BillModal.vue';
+import CloseModal from './components/CloseModal.vue';
 
 
 let mobile = ref(null);
-const billModal = ref(false);
+let billModal = ref(false);
+let closeModal = ref(false);
+
 
 checkScreenSize();
 window.addEventListener('resize', checkScreenSize);
@@ -21,13 +24,22 @@ function checkScreenSize() {
   mobile.value = false;
 }
 
-function toggleModel() {
+function toggleModal() {
   billModal.value = !billModal.value;
 }
 
+function toggleCloseModal() {
+  closeModal.value = !closeModal.value;
+}
+
+provide('closeModal', {
+  closeModal,
+  toggleCloseModal,
+})
+
 provide('billModal', {
   billModal,
-  toggleModel,
+  toggleModal,
 });
 </script>
 
@@ -35,8 +47,9 @@ provide('billModal', {
   <div v-if="!mobile" class="app flex flex-column">
     <Navigation />
     <div class="app-content flex flex-column">
+      <CloseModal @close-modal="toggleCloseModal" @close-bill="toggleModal" v-if="closeModal" />
       <Transition name="billModal">
-        <BillModal @close-bill="toggleModel" v-if="billModal" />
+        <BillModal @close-bill="toggleModal" v-if="billModal" />
       </Transition>
       <router-view />
     </div>

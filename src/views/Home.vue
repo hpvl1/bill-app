@@ -3,7 +3,7 @@ import { ref, inject } from 'vue';
 
 let filterMenu = ref(null);
 
-const { billModal, toggleModel } = inject('billModal');
+const { billModal, toggleModal } = inject('billModal');
 
 function toggleFilterMenu() {
   filterMenu.value = !filterMenu.value;
@@ -28,7 +28,7 @@ function toggleFilterMenu() {
             <li>Clear Filter</li>
           </ul>
         </div>
-        <div @click="toggleModel" class="button flex">
+        <div @click="toggleModal" class="button flex">
           <div class="inner-button flex">
             <img src="../assets/img/icon-plus.svg" alt="" />
           </div>
