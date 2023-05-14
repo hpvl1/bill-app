@@ -16,7 +16,7 @@ function closeBill() {
 <template>
   <div class="modal flex">
     <div class="modal-content">
-      <p>Are you sure you want to close modal? Your changes will not be saved.</p>
+      <p>Are you sure you want to close modal?<br/>Your changes will not be saved!</p>
       <div class="actions flex">
         <button class="purple" @click="closeModal">Return</button>
         <button class="red" @click="closeBill">Close</button>
