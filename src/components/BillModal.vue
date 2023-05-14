@@ -233,11 +233,11 @@ watch(
       <!-- Save/Exit -->
       <div class="save flex">
         <div class="left">
-          <button @click="closeBillModal" class="red">Cancel</button>
+          <button type="button" @click="closeBillModal" class="red">Cancel</button>
         </div>
         <div class="right flex">
-          <button @click="saveDraft" class="dark-purple">Save Draft</button>
-          <button @click="publishBill" class="purple">Create Bill</button>
+          <button type="submit" @click="saveDraft" class="dark-purple">Save Draft</button>
+          <button type="submit" @click="publishBill" class="purple">Create Bill</button>
         </div>
       </div>
     </form>
