@@ -1,12 +1,14 @@
 <script setup>
-import { reactive, watch, ref } from 'vue';
+import { reactive, watch, ref, inject } from 'vue';
 import { uid } from 'uid';
 import db from '../firebase/index.js';
 import { addDoc, collection } from 'firebase/firestore';
 
 import Loading from './Loading.vue';
 
-const emit = defineEmits(['closeBill']);
+const emit = defineEmits(['closeBill', 'closeModal']);
+
+const { toggleCloseModal } = inject('closeModal');
 
 const form = reactive({
   billerAddress: null,
@@ -37,6 +39,8 @@ const form = reactive({
 });
 
 let loading = ref(null);
+let billWrap = ref(false);
+
 
 form.billDateUnix = Date.now();
 form.billDate = new Date(form.billDateUnix).toLocaleDateString('en-GB', form.dateOptions);
@@ -47,6 +51,12 @@ function onDeleteBillItem(id) {
 
 function closeBillModal() {
   emit('closeBill');
+}
+
+function checkClick(e) {
+  if (e.target === billWrap.value) {
+    toggleCloseModal();
+  }
 }
 
 function addNewBillItem() {
