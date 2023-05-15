@@ -1,15 +1,21 @@
 <script setup>
-import { ref, provide } from 'vue';
+import { ref, provide, reactive, computed } from 'vue';
+
+import db from './firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 import Navigation from './components/Navigation.vue';
 import BillModal from './components/BillModal.vue';
 import CloseModal from './components/CloseModal.vue';
 
-
 let mobile = ref(null);
 let billModal = ref(false);
 let closeModal = ref(false);
+let billsLoaded = ref(null);
 
+const state = reactive({
+  billData: [],
+});
 
 checkScreenSize();
 window.addEventListener('resize', checkScreenSize);
@@ -24,6 +30,43 @@ function checkScreenSize() {
   mobile.value = false;
 }
 
+async function getBillData() {
+  const querySnapshot = await getDocs(collection(db, 'bills'));
+  querySnapshot.forEach((doc) => {
+    if (!state.billData.some((bill) => bill.docId === doc.id)) {
+      const data = {
+        docId: doc.id,
+        billId: doc.data().billId,
+        billerAddress: doc.data().billerAddress,
+        billerCity: doc.data().billerCity,
+        billerZipCode: doc.data().billerZipCode,
+        billerCountry: doc.data().billerCountry,
+        clientName: doc.data().clientName,
+        clientEmail: doc.data().clientEmail,
+        clientAddress: doc.data().clientAddress,
+        clientCity: doc.data().clientCity,
+        clientZipCode: doc.data().clientZipCode,
+        clientCountry: doc.data().clientCountry,
+        billDateUnix: doc.data().billDateUnix,
+        billDate: doc.data().billDate,
+        paymentTerms: doc.data().paymentTerms,
+        paymentDateUnix: doc.data().paymentDateUnix,
+        paymentDate: doc.data().paymentDate,
+        productDescription: doc.data().productDescription,
+        billItemList: doc.data().billItemList,
+        billTotal: doc.data().billTotal,
+        billPending: doc.data().billPending,
+        billDraft: doc.data().billDraft,
+        billPaid: doc.data().billPaid,
+      };
+      state.billData.push(data);
+      billsLoaded.value = true;
+    }
+  });
+}
+
+getBillData();
+
 function toggleModal() {
   billModal.value = !billModal.value;
 }
@@ -32,10 +75,15 @@ function toggleCloseModal() {
   closeModal.value = !closeModal.value;
 }
 
+provide(
+  'billData',
+  computed(() => state.billData),
+);
+
 provide('closeModal', {
   closeModal,
   toggleCloseModal,
-})
+});
 
 provide('billModal', {
   billModal,
@@ -44,19 +92,21 @@ provide('billModal', {
 </script>
 
 <template>
-  <div v-if="!mobile" class="app flex flex-column">
-    <Navigation />
-    <div class="app-content flex flex-column">
-      <CloseModal @close-modal="toggleCloseModal" @close-bill="toggleModal" v-if="closeModal" />
-      <Transition name="billModal">
-        <BillModal @close-bill="toggleModal" v-if="billModal" />
-      </Transition>
-      <router-view />
+  <div v-if="billsLoaded">
+    <div v-if="!mobile" class="app flex flex-column">
+      <Navigation />
+      <div class="app-content flex flex-column">
+        <CloseModal @close-modal="toggleCloseModal" @close-bill="toggleModal" v-if="closeModal" />
+        <Transition name="billModal">
+          <BillModal @close-bill="toggleModal" v-if="billModal" />
+        </Transition>
+        <router-view />
+      </div>
     </div>
-  </div>
-  <div v-else class="mobile-message flex flex-column">
-    <h2>Sorry, this app is not supported on Mobile Devices</h2>
-    <p>To use this app, please use a computer or Tablet</p>
+    <div v-else class="mobile-message flex flex-column">
+      <h2>Sorry, this app is not supported on Mobile Devices</h2>
+      <p>To use this app, please use a computer or Tablet</p>
+    </div>
   </div>
 </template>
 
@@ -103,8 +153,7 @@ provide('billModal', {
 }
 
 .billModal-enter-from,
-.billModal-leave-to
-{
+.billModal-leave-to {
   transform: translateX(-700px);
 }
 
