@@ -41,7 +41,6 @@ const form = reactive({
 let loading = ref(null);
 let billWrap = ref(false);
 
-
 form.billDateUnix = Date.now();
 form.billDate = new Date(form.billDateUnix).toLocaleDateString('en-GB', form.dateOptions);
 
@@ -115,6 +114,7 @@ async function uploadBill() {
     billPending: form.billPending,
     billDraft: form.billDraft,
     billItemList: form.billItemList,
+    billTotal: form.billTotal,
   });
 
   loading.value = false;
@@ -215,7 +215,12 @@ watch(
         </div>
         <div class="input flex flex-column">
           <label for="productDescription">Product Description</label>
-          <input v-model.trim="form.productDescription" type="text" id="productDescription" required />
+          <input
+            v-model.trim="form.productDescription"
+            type="text"
+            id="productDescription"
+            required
+          />
         </div>
         <div class="work-items">
           <h3>Item List</h3>
