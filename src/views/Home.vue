@@ -1,9 +1,12 @@
 <script setup>
 import { ref, inject } from 'vue';
+import Bill from '../components/Bill.vue';
 
 let filterMenu = ref(null);
 
 const { billModal, toggleModal } = inject('billModal');
+
+const billData  = inject('billData');
 
 function toggleFilterMenu() {
   filterMenu.value = !filterMenu.value;
@@ -35,6 +38,10 @@ function toggleFilterMenu() {
           <span>New Bill</span>
         </div>
       </div>
+    </div>
+    <!-- Bills -->
+    <div>
+      <Bill v-for="(bill, index) in billData" :bill="bill" :key="index" />
     </div>
   </div>
 </template>
