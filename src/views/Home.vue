@@ -40,8 +40,13 @@ function toggleFilterMenu() {
       </div>
     </div>
     <!-- Bills -->
-    <div>
+    <div v-if="billData.length > 0">
       <Bill v-for="(bill, index) in billData" :bill="bill" :key="index" />
+    </div>
+    <div v-else class="empty flex flex-column">
+      <img src="../assets/img/illustration-empty.svg" alt="">
+      <h3>There is nothing here!</h3>
+      <p>Please, create a new bill by clicking the <b>New Bill</b> button and get started.</p>
     </div>
   </div>
 </template>
@@ -114,6 +119,30 @@ function toggleFilterMenu() {
           }
         }
       }
+    }
+  }
+
+  .empty {
+    margin-top: 160px;
+    align-items: center;
+
+
+    img {
+      width: 214px;
+      height: 200px;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin-top: 40px;
+    }
+
+    p {
+      text-align: center;
+      max-width: 224px;
+      font-size: 12px;
+      font-weight: 300;
+      margin-top: 16px;
     }
   }
 }
