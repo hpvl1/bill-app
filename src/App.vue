@@ -31,38 +31,43 @@ function checkScreenSize() {
 }
 
 async function getBillData() {
-  const querySnapshot = await getDocs(collection(db, 'bills'));
-  querySnapshot.forEach((doc) => {
-    if (!state.billData.some((bill) => bill.docId === doc.id)) {
-      const data = {
-        docId: doc.id,
-        billId: doc.data().billId,
-        billerAddress: doc.data().billerAddress,
-        billerCity: doc.data().billerCity,
-        billerZipCode: doc.data().billerZipCode,
-        billerCountry: doc.data().billerCountry,
-        clientName: doc.data().clientName,
-        clientEmail: doc.data().clientEmail,
-        clientAddress: doc.data().clientAddress,
-        clientCity: doc.data().clientCity,
-        clientZipCode: doc.data().clientZipCode,
-        clientCountry: doc.data().clientCountry,
-        billDateUnix: doc.data().billDateUnix,
-        billDate: doc.data().billDate,
-        paymentTerms: doc.data().paymentTerms,
-        paymentDateUnix: doc.data().paymentDateUnix,
-        paymentDate: doc.data().paymentDate,
-        productDescription: doc.data().productDescription,
-        billItemList: doc.data().billItemList,
-        billTotal: doc.data().billTotal,
-        billPending: doc.data().billPending,
-        billDraft: doc.data().billDraft,
-        billPaid: doc.data().billPaid,
-      };
-      state.billData.push(data);
-      billsLoaded.value = true;
-    }
-  });
+  try {
+    const querySnapshot = await getDocs(collection(db, 'bills'));
+    querySnapshot.forEach((doc) => {
+      if (!state.billData.some((bill) => bill.docId === doc.id)) {
+        const data = {
+          docId: doc.id,
+          billId: doc.data().billId,
+          billerAddress: doc.data().billerAddress,
+          billerCity: doc.data().billerCity,
+          billerZipCode: doc.data().billerZipCode,
+          billerCountry: doc.data().billerCountry,
+          clientName: doc.data().clientName,
+          clientEmail: doc.data().clientEmail,
+          clientAddress: doc.data().clientAddress,
+          clientCity: doc.data().clientCity,
+          clientZipCode: doc.data().clientZipCode,
+          clientCountry: doc.data().clientCountry,
+          billDateUnix: doc.data().billDateUnix,
+          billDate: doc.data().billDate,
+          paymentTerms: doc.data().paymentTerms,
+          paymentDateUnix: doc.data().paymentDateUnix,
+          paymentDate: doc.data().paymentDate,
+          productDescription: doc.data().productDescription,
+          billItemList: doc.data().billItemList,
+          billTotal: doc.data().billTotal,
+          billPending: doc.data().billPending,
+          billDraft: doc.data().billDraft,
+          billPaid: doc.data().billPaid,
+        };
+        state.billData.push(data);
+      }
+    });
+    billsLoaded.value = true;
+    return state.billData;
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 getBillData();
